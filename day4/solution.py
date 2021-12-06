@@ -27,18 +27,26 @@ def create_bingo_boards(bingo_inputs: list):
 def mark_board(board: List[list], number: int) -> list:
     for line in board:
         if number in line:
-            # replace value with -1
-            line.remove(number)
+            pos = line.index(number)
+            line[pos] = -1
     return board
 
 def check_board(board: List[list]) -> bool:
     winner = False
     for line in board:
-        if len(line) > 5:
-            raise Exception
-        if len(line) == 0:
+        if sum(line) == -5:
             winner = True
+            break
     # Check on vertical
+    for i in range(5):
+        column_sum = 0
+        for line in board:
+            column_sum += line[i]
+            if column_sum == -5:
+                winner = True
+                
+        if winner:
+            break
     return winner
 
 def calculate_score(board: List[list], last_number_called: int):
@@ -48,7 +56,7 @@ def calculate_score(board: List[list], last_number_called: int):
     return score * last_number_called
 
 def main():
-    winning_board = []
+    winning_board: List[list] = []
     last_number_called = None
 
     with open("input.csv") as inputs:
@@ -66,7 +74,9 @@ def main():
         if winning_board != []:
             last_number_called = number
             break
-    print(winning_board)
+    for line in winning_board:
+        while -1 in line:
+            line.remove(-1)
     final_score = calculate_score(winning_board, last_number_called)
     print(f"Final Score: {final_score}")
     
